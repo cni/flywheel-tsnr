@@ -13,7 +13,7 @@ Calculates the temporal SNR (tSNR) and signal fluctuation to noise ratio (SFNR) 
 
 The script ``tsnr.py`` can also be executed seperately to generate tSNR maps on 4D NIFTIs containing time series images:
 
-``python tsnr.py [-o OUTBASE] [-d DISCARD_VOL] [-f BET_FRAC] infile``
+``python tsnr.py [-o OUTBASE] [-d DISCARD_VOL] [-f BET_FRAC] [-r ROI_SIZE] infile``
 
 Dependencies include AFNI, NumPy, SciPy, NiBabel.
 
