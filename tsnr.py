@@ -68,14 +68,14 @@ if __name__ == '__main__':
     num_tpoints = noise.shape[3]
     center_of_mass_t = np.zeros((3, num_tpoints))
     center_of_mass_drift = np.zeros((3, num_tpoints))
-    # calculate the center of mass drift in mm
+    # calculate the center of mass drift in mm over the time series
     for t in range(num_tpoints):
         center_of_mass_t[:, t] = ndimage.measurements.center_of_mass(tseries[...,t])
         if t == 0:
             center_of_mass = list(int(s) for s in ndimage.measurements.center_of_mass(tseries[...,t]))
         else:
             center_of_mass_drift[:, t] = np.multiply(center_of_mass_t[:, t] - center_of_mass_t[:, 0], pixdim)
-    # calculate the radius of decorrelation according to the Weisskoff analysis
+    # calculate the radius of decorrelation according to the Weisskoff analysis. Radius of correlation measures how much correlation there is among the adjacent voxels due to noise contamination. Smaller radius of correlation indicates less contamination
     roi_length = range(1, args.roi_size+1)
     roi_std_detrend = []
     for r in roi_length:
@@ -92,7 +92,7 @@ if __name__ == '__main__':
         res = roi_mean - poly(range(num_tpoints))
         roi_std_detrend.append(np.std(res))
     rdc = roi_std_detrend[0] / roi_std_detrend[args.roi_size-1]
-    # signal intensity within ROI over the time series
+    # mean signal intensity within ROI over the time series. Temporal variation within 0.05% is preferred
     roi_signal_mean = roi_mean 
     roi_signal_mean_fitted = poly(range(num_tpoints))
     sfnr_center = np.mean(sfnr[np.where(roi_mask[:,:,:,0])])
