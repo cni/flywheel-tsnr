@@ -7,8 +7,8 @@ Calculates the temporal SNR (tSNR) and signal fluctuation to noise ratio (SFNR) 
     - Number of discarded volumes
     - Size of central ROI
 - Gear outputs:
-    - tSNR map, SFNR map in NIFTI format
-    - Plot of the temporal drift of mean signal within ROI, plot of the temporal drift of center of mass, plot of Weisskoff analysis (radius of decorrelation)
+    - tSNR map ``*_tsnr.nii.gz``, SFNR map ``*_sfnr.nii.gz``
+    - Plot of the temporal drift of mean signal within ROI ``*_mean_signal.png``, plot of the temporal drift of center of mass ``*_cm_drift.png``, plot of Weisskoff analysis (radius of decorrelation) ``*_rdc.png``
     - JSON file containing statistic results e.g. mean tSNR, SFNR in ROI
 
 The script ``tsnr.py`` can also be executed seperately to generate tSNR maps on 4D NIFTIs containing time series images:

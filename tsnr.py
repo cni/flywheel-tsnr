@@ -44,7 +44,8 @@ if __name__ == '__main__':
     nstd_name = outbase+'_nstd.nii.gz'
     sfnr_name = outbase+'_sfnr.nii.gz'
 
-    # discard volumes, mask, detrend
+    # discard volumes, mask, detrend using AFNI functions.
+    # 3dTcat removes the beginning non steady-state volumes; 3dAutomask generates a 3D mask; 3dDetrend removes a fitted polynomial from the time series signal of each voxel, the detrended the time series is used to calculate the signal fluctuation to noise ratio
     #os.system("3dTcat -prefix %s %s[%d..$]; 3dAutomask -prefix %s -clfrac %f %s; 3dDetrend -prefix %s -polort %d %s" 
     os.system(". /etc/afni/afni.sh; 3dTcat -prefix %s %s[%d..$]; 3dAutomask -prefix %s -clfrac %f %s; 3dDetrend -prefix %s -polort %d %s" 
               %(tseries_name, args.infile, args.discard_vol, 
@@ -67,13 +68,14 @@ if __name__ == '__main__':
     num_tpoints = noise.shape[3]
     center_of_mass_t = np.zeros((3, num_tpoints))
     center_of_mass_drift = np.zeros((3, num_tpoints))
+    # calculate the center of mass drift in mm
     for t in range(num_tpoints):
         center_of_mass_t[:, t] = ndimage.measurements.center_of_mass(tseries[...,t])
         if t == 0:
             center_of_mass = list(int(s) for s in ndimage.measurements.center_of_mass(tseries[...,t]))
         else:
             center_of_mass_drift[:, t] = np.multiply(center_of_mass_t[:, t] - center_of_mass_t[:, 0], pixdim)
-
+    # calculate the radius of decorrelation according to the Weisskoff analysis
     roi_length = range(1, args.roi_size+1)
     roi_std_detrend = []
     for r in roi_length:
@@ -90,6 +92,7 @@ if __name__ == '__main__':
         res = roi_mean - poly(range(num_tpoints))
         roi_std_detrend.append(np.std(res))
     rdc = roi_std_detrend[0] / roi_std_detrend[args.roi_size-1]
+    # signal intensity within ROI over the time series
     roi_signal_mean = roi_mean 
     roi_signal_mean_fitted = poly(range(num_tpoints))
     sfnr_center = np.mean(sfnr[np.where(roi_mask[:,:,:,0])])
